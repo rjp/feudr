@@ -25,10 +25,15 @@ class Client
 
   def post(location, body = [ ])
     uri = "#{@urlbase}/#{location}"
-    p uri
     json = body.to_json
-    p json
-    return RestClient.post(uri, json, :content_type => 'application/json')
+    response = RestClient.post(uri, json, :content_type => 'application/json')
+    return JSON.parse(response)
+  end
+
+  def check_success(result)
+    if result['status'] != 'success' then
+      raise Error, "Could not login: #{result['content']['message']}"
+    end
   end
 
   def hash_password(password)
@@ -40,30 +45,25 @@ class Client
         'user/login/',
         'username'  => username,
         'password'  => hash_password(password))
-
-    if result['status'] != 'success' then
-      raise Error, "Could not login: #{result['content']['message']}"
-    end
+    check_success(result)
+    return result
   end
 
   def login_with_email(email, password)
     result = post(
-        'user/login/',
+        'user/login/email/',
         'email'     => email,
         'password'  => hash_password(password))
-
-    if result['status'] != 'success' then
-      p result
-      raise Error, "Could not login: #{result['content']['message']}"
-    end
+    check_success(result)
+    return result
   end
 
   def check_notifications
-    post('user/notifications')
+    post('user/notifications/')
   end
 
   def user_status
-    post('user/status')
+    post('user/status/')
   end
 
   def user_search(username_or_email)
@@ -73,16 +73,16 @@ class Client
   end
 
   def resume
-    post('user/notifications/resume')
+    post('user/notifications/resume/')
   end
 
   def relationships
-    post('usr/relationships')
+    post('usr/relationships/')
   end
 
   def invite(invitee, ruleset=0, boardtype='normal')
     post(
-      'invite/new',
+      'invite/new/',
       'ruleset'    => ruleset,
       'boardtype'  => boardtype,
       'invitee'    => invitee)
@@ -90,13 +90,13 @@ class Client
 
   def invite_random(ruleset=0, boardtype='normal')
     post(
-        'random_request/create',
+        'random_request/create/',
         'ruleset'   => ruleset,
         'boardtype' => boardtype)
   end
 
   def resign(game)
-    post("#{game}/resign")
+    post("#{game}/resign/")
   end
 end
 
