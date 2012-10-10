@@ -35,10 +35,10 @@ class Client
     return Digest::SHA1.hexdigest(password + 'JarJarBinks9')
   end
 
-  def login(userid, password)
+  def login(username, password)
     result = post(
         'user/login/',
-        'id'        => userid,
+        'username'  => username,
         'password'  => hash_password(password))
 
     if result['status'] != 'success' then
