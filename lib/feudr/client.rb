@@ -1,7 +1,9 @@
 require 'rest_client'
 require 'json'
 
-class FeudrClient
+module Feudr
+
+class Client
   RuleNames = [
     'American',
     'Norwegian',
@@ -55,5 +57,7 @@ class FeudrClient
   def resign(game)
     post("#{game}/resign")
   end
+end
+
 end
 
