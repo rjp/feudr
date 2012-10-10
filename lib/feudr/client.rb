@@ -1,5 +1,6 @@
 require 'rest_client'
 require 'json'
+require 'digest/sha1'
 
 module Feudr
 
@@ -30,11 +31,15 @@ class Client
     return RestClient.post(uri, json, :content_type => 'application/json')
   end
 
+  def hash_password(password)
+    return Digest::SHA1.hexdigest(password + 'JarJarBinks9')
+  end
+
   def login(userid, password)
     result = post(
         'user/login/',
         'id'        => userid,
-        'password'  => password)
+        'password'  => hash_password(password))
 
     if result['status'] != 'success' then
       raise Error, "Could not login: #{result['content']['message']}"
@@ -45,7 +50,7 @@ class Client
     result = post(
         'user/login/',
         'email'     => email,
-        'password'  => password)
+        'password'  => hash_password(password))
 
     if result['status'] != 'success' then
       p result
