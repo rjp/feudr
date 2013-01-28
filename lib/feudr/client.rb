@@ -21,12 +21,16 @@ class Client
   def initialize
     @serverid = '%02d' % rand(7)
     @urlbase = "http://game#{@serverid}.wordfeud.com/wf"
+    @cookies = {}
   end
 
   def post(location, body = [ ])
     uri = "#{@urlbase}/#{location}"
     json = body.to_json
-    response = RestClient.post(uri, json, :content_type => 'application/json')
+    response = RestClient.post(uri, json, :content_type => 'application/json', :cookies => @cookies)
+    if response.cookies['sessionid'] then
+        @cookies['sessionid'] = response.cookies['sessionid']
+    end
     return JSON.parse(response)
   end
 
@@ -97,6 +101,10 @@ class Client
 
   def resign(game)
     post("#{game}/resign/")
+  end
+
+  def games()
+    post('user/games/')
   end
 end
 
