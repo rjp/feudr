@@ -93,6 +93,14 @@ class Client
     post('user/notifications/resume/')
   end
 
+  def game(id)
+    get("game/#{id}")
+  end
+
+  def board(id, move=0)
+    get("board/#{id}")
+  end
+
   def relationships
     post('user/relationships/')
   end
