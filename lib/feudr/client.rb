@@ -81,7 +81,7 @@ class Client
   end
 
   def relationships
-    post('usr/relationships/')
+    post('user/relationships/')
   end
 
   def invite(invitee, ruleset=0, boardtype='normal')
