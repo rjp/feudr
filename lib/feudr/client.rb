@@ -34,6 +34,19 @@ class Client
     return JSON.parse(response)
   end
 
+  def get(location)
+    uri = "#{@urlbase}/#{location}"
+    response = RestClient.get(uri, :content_type => 'application/json', :cookies => @cookies)
+    if response.cookies['sessionid'] then
+        @cookies['sessionid'] = response.cookies['sessionid']
+    end
+    if response.code == 301 then
+        p response.headers
+    end
+    puts response
+    return JSON.parse(response)
+  end
+
   def check_success(result)
     if result['status'] != 'success' then
       raise Error, "Could not login: #{result['content']['message']}"
