@@ -18,6 +18,11 @@ class Client
     'French',
   ]
 
+  BoardTypes = [
+      "Normal",
+      "Random"
+  ]
+
   def initialize
     @serverid = '%02d' % rand(7)
     @urlbase = "http://game#{@serverid}.wordfeud.com/wf"
@@ -126,6 +131,14 @@ class Client
 
   def games()
     post('user/games/')
+  end
+
+  def rulename(i)
+      return RuleNames[i]
+  end
+
+  def boardtype(i)
+      return BoardTypes[i]
   end
 end
 
