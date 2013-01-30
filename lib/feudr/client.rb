@@ -18,6 +18,7 @@ class Client
     'French',
   ]
 
+  attr_accessor :username
   BoardTypes = [
       "Normal",
       "Random"
@@ -77,6 +78,8 @@ class Client
         'email'     => email,
         'password'  => hash_password(password))
     check_success(result)
+    @username = result['content']['username']
+    @user_id = result['content']['id']
     return result
   end
 
