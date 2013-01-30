@@ -88,7 +88,9 @@ class Client
   end
 
   def user_status
-    post('user/status/')
+    result = post('user/status/')
+    check_success(result)
+    return result
   end
 
   def user_search(username_or_email)
