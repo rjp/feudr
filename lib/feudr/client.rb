@@ -25,6 +25,14 @@ class Client
       "Random"
   ]
 
+  def rules(i)
+      return RuleNames[i]
+  end
+
+  def board_type(i)
+      return i==0 ? "Normal" : "Random ##{i}"
+  end
+
   def initialize
     @serverid = '%02d' % rand(7)
     @urlbase = "http://game#{@serverid}.wordfeud.com/wf"
