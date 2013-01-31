@@ -1,6 +1,7 @@
 require 'rest_client'
 require 'json'
 require 'digest/sha1'
+require 'mash'
 
 module Feudr
 
@@ -104,7 +105,9 @@ class Client
   end
 
   def game(id)
-    get("game/#{id}")
+    result = get("game/#{id}")
+    # ERROR CHECKING
+    return Mash.new(result['content']['game'])
   end
 
   def board(id, move=0)
@@ -135,7 +138,9 @@ class Client
   end
 
   def games()
-    post('user/games/')
+    result = post('user/games/')
+    games = result['content']['games'].map{|g| Mash.new(g)}
+    return games
   end
 
   def rulename(i)
