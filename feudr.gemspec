@@ -5,7 +5,7 @@ Gem::Specification.new do |gem|
   gem.summary       = "REST Client for Wordfeud game API"
   gem.homepage      = "http://github.com/cout/feudr"
 
-  gem.files         = ['lib/feudr/client.rb']
+  gem.files         = ['lib/feudr/client.rb', 'lib/feudr/board.rb']
   gem.name          = "feudr"
   gem.require_paths = ["lib"]
   gem.version       = 0.1
