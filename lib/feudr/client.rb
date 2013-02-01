@@ -1,7 +1,7 @@
 require 'rest_client'
 require 'json'
 require 'digest/sha1'
-require 'mash'
+require 'hashie'
 
 module Feudr
 
@@ -19,7 +19,8 @@ class Client
     'French',
   ]
 
-  attr_accessor :username
+  attr_accessor :username, :userId
+
   BoardTypes = [
       "Normal",
       "Random"
@@ -46,7 +47,12 @@ class Client
     if response.cookies['sessionid'] then
         @cookies['sessionid'] = response.cookies['sessionid']
     end
-    return JSON.parse(response)
+    parsed = Hashie::Mash.new(JSON.parse(response))
+    if parsed.status == 'success' then
+        return parsed.content
+    end
+
+    raise Error, location
   end
 
   def get(location)
@@ -55,11 +61,12 @@ class Client
     if response.cookies['sessionid'] then
         @cookies['sessionid'] = response.cookies['sessionid']
     end
-    if response.code == 301 then
-        p response.headers
+    parsed = Mash.new(JSON.parse(response))
+    if parsed.status == 'success' then
+        return parsed.content
     end
-    puts response
-    return JSON.parse(response)
+
+    raise Error, location
   end
 
   def check_success(result)
@@ -73,22 +80,21 @@ class Client
   end
 
   def login(username, password)
-    result = post(
+    post(
         'user/login/',
         'username'  => username,
-        'password'  => hash_password(password))
-    check_success(result)
-    return result
+        'password'  => hash_password(password)
+    )
   end
 
   def login_with_email(email, password)
     result = post(
         'user/login/email/',
         'email'     => email,
-        'password'  => hash_password(password))
-    check_success(result)
-    @username = result['content']['username']
-    @user_id = result['content']['id']
+        'password'  => hash_password(password)
+    )
+    @username = result.username
+    @userId = result.id
     return result
   end
 
@@ -97,9 +103,7 @@ class Client
   end
 
   def user_status
-    result = post('user/status/')
-    check_success(result)
-    return result
+    post('user/status/')
   end
 
   def user_search(username_or_email)
@@ -114,16 +118,17 @@ class Client
 
   def game(id)
     result = get("game/#{id}")
-    # ERROR CHECKING
-    return Mash.new(result['content']['game'])
+    return result.game
   end
 
   def board(id, move=0)
-    get("board/#{id}")
+    result = get("board/#{id}")
+    return result.board
   end
 
   def relationships
-    post('user/relationships/')
+    result = post('user/relationships/')
+    return result.relationships
   end
 
   def invite(invitee, ruleset=0, boardtype='normal')
@@ -147,8 +152,7 @@ class Client
 
   def games()
     result = post('user/games/')
-    games = result['content']['games'].map{|g| Mash.new(g)}
-    return games
+    return result.games
   end
 
   def rulename(i)
